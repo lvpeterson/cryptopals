@@ -56,8 +56,8 @@ func decryptAes128ECB(data, key []byte) []byte{
     }
 
     decryptedData := make([]byte, len(data))
-    for bs, be := 0, blockSize; bs < len(data); bs, be = bs+blockSize, be+blockSize {
-        block.Decrypt(decryptedData[bs:be], data[bs:be])
+    for begChunk, endChunk := 0, blockSize; begChunk < len(data); begChunk, endChunk = begChunk+blockSize, endChunk+blockSize {
+        block.Decrypt(decryptedData[begChunk:endChunk], data[begChunk:endChunk])
     }
 
     return decryptedData
