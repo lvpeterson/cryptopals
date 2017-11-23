@@ -42,10 +42,23 @@ func main() {
     if derr != nil {
         log.Fatal(err)
     }
-    fmt.Println(decodedContents)
 
-    cipher, cerr := aes.NewCiper(key)
-    if cerr != nil {
+    decryptedData := decryptAes128ECB(decodedContents, key)
+    fmt.Println (string(decryptedData))
+}
+
+func decryptAes128ECB(data, key []byte) []byte{
+
+    blockSize := 16
+    block, err := aes.NewCipher(key)
+    if err != nil {
         log.Fatal(err)
     }
+
+    decryptedData := make([]byte, len(data))
+    for bs, be := 0, blockSize; bs < len(data); bs, be = bs+blockSize, be+blockSize {
+        block.Decrypt(decryptedData[bs:be], data[bs:be])
+    }
+
+    return decryptedData
 }
