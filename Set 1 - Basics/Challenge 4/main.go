@@ -24,7 +24,7 @@ func main(){
 
 	// Challenge Setup
 	// Load line from file -
-	challengeLines, err := fileToArray("challenge4file.txt")
+	challengeLines, err := fileToArray("encryptedData")
 	if err != nil{
 		fmt.Println(err)
 	}

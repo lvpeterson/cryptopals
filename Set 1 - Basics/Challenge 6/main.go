@@ -61,7 +61,7 @@ import(
 const (
 	MAXKEYSIZE = 40
 	MINKEYSIZE = 2
-	challengefile = "challenge6file.txt"
+	challengefile = "encryptedData"
 )
 
 func main() {

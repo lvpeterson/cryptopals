@@ -26,22 +26,24 @@ import(
 )
 
 const (
-	challengefile = "challenge7file.txt"
+	challengefile = "encryptedData"
 
 )
+
+func check(err error){
+    if err != nil{
+        log.Fatal(err)
+    }
+}
 
 func main() {
 	// Challenge Setup
 	key := []byte("YELLOW SUBMARINE")
 
 	fileContents, err := ioutil.ReadFile(challengefile)
-	if err != nil {
-        log.Fatal(err)
-    }
-    decodedContents, derr := base64.StdEncoding.DecodeString(string(fileContents))
-    if derr != nil {
-        log.Fatal(err)
-    }
+    check(err)
+    decodedContents, err := base64.StdEncoding.DecodeString(string(fileContents))
+    check(err)
 
     decryptedData := decryptAes128ECB(decodedContents, key)
     fmt.Println (string(decryptedData))
@@ -51,13 +53,11 @@ func decryptAes128ECB(data, key []byte) []byte{
 
     blockSize := 16
     block, err := aes.NewCipher(key)
-    if err != nil {
-        log.Fatal(err)
-    }
+    check(err)
 
     decryptedData := make([]byte, len(data))
-    for begChunk, endChunk := 0, blockSize; begChunk < len(data); begChunk, endChunk = begChunk+blockSize, endChunk+blockSize {
-        block.Decrypt(decryptedData[begChunk:endChunk], data[begChunk:endChunk])
+    for bs, be := 0, blockSize; bs < len(data); bs, be = bs+blockSize, be+blockSize {
+        block.Decrypt(decryptedData[bs:be], data[bs:be])
     }
 
     return decryptedData
