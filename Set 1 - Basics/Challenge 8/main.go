@@ -26,28 +26,26 @@ func main() {
 	fileContentArray, err := fileToArray(challengefile)
 	check(err)
 	fmt.Println(len(fileContentArray))
-	count := 0
+
 	for _,line := range fileContentArray {
 	    decodedHex, err := hex.DecodeString(string(line))
 	    check(err)
-	    if(detectECB(decodedHex)){
-	    	count ++
-	    }
+	    ScoringSystem(decodedHex)
 	}
-
-
-
-    fmt.Println(count)
 
 }
 
-func detectECB(data []byte) bool {
-	blockSize := 16
-	if (len(data) % blockSize == 0){
-		return true
+func ScoringSystem(bArray []byte) int{
+	highFreq := make(map[byte]int)
+	decodeLen := len(bArray)
+	score := 0
+
+	for i := 0; i < decodeLen; i++{
+		highFreq[bArray[i]] += 1
 	}
 
-	return false
+	fmt.Println(highFreq)
+	return score
 }
 
 func fileToArray (filePath string) ([]string, error) {
