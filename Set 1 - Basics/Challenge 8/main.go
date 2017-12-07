@@ -2,22 +2,21 @@
 
 package main
 
-import(
+import (
+	"bufio"
+	"encoding/hex"
 	"fmt"
 	"log"
-	"bufio"
 	"os"
-	"encoding/hex"
 	//"crypto/aes"
 )
 
 const (
 	challengefile = "encryptedData"
-
 )
 
-func check(err error){
-	if err != nil{
+func check(err error) {
+	if err != nil {
 		log.Fatal(err)
 	}
 }
@@ -25,41 +24,54 @@ func check(err error){
 func main() {
 	fileContentArray, err := fileToArray(challengefile)
 	check(err)
-	fmt.Println(len(fileContentArray))
+	lineMap := make(map[int]int)
 
-	for _,line := range fileContentArray {
-	    decodedHex, err := hex.DecodeString(string(line))
-	    check(err)
-	    ScoringSystem(decodedHex)
+	for linenum, line := range fileContentArray {
+		decodedHex, err := hex.DecodeString(string(line))
+		check(err)
+		lineMap[linenum] = ScoringSystem(decodedHex)
 	}
-
+	ecbline := getLowest(lineMap)
+	fmt.Println(fileContentArray[ecbline])
 }
 
-func ScoringSystem(bArray []byte) int{
+func getLowest(lineMap map[int]int) int {
+	lowestCount := 9999
+	lowestLineNum := 0
+
+	for linenum, count := range lineMap {
+		if count < lowestCount {
+			lowestCount = count
+			lowestLineNum = linenum
+		}
+	}
+	fmt.Println(lowestCount)
+	return lowestLineNum
+}
+
+func ScoringSystem(bArray []byte) int {
 	highFreq := make(map[byte]int)
 	decodeLen := len(bArray)
-	score := 0
 
-	for i := 0; i < decodeLen; i++{
+	for i := 0; i < decodeLen; i++ {
 		highFreq[bArray[i]] += 1
 	}
 
-	fmt.Println(highFreq)
-	return score
+	return len(highFreq)
 }
 
-func fileToArray (filePath string) ([]string, error) {
-    file, err := os.Open(filePath)
-    if err != nil {
-        return nil, err
-    }
-    defer file.Close ()
+func fileToArray(filePath string) ([]string, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
 
-    lines := []string{}
-    scanner := bufio.NewScanner(file)
-    for scanner.Scan() {
-        lines = append(lines, scanner.Text())
-    }
+	lines := []string{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
 
-    return lines, scanner.Err()
+	return lines, scanner.Err()
 }
