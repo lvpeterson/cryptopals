@@ -38,6 +38,7 @@ func main() {
 			appendedData := appendBytes(prependedData)
 			encryptedData = encryptCBC(appendedData, aesKey, ivKey, blockSize)
 		}
+		// Mode: 0/1 ECB/CBC - Checker: true/false ECB/CBC
 		fmt.Printf("Mode: %d Checker: %v\n", modeSelect, determineECB(encryptedData, blockSize))
 	}
 }
