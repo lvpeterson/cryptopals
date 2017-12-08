@@ -7,7 +7,7 @@ import (
 	"reflect"
 )
 
-func check(err error) {
+func Check(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -19,7 +19,7 @@ func check(err error) {
 
 // Encrypt ECB Mode
 // --------------------------------------------------------------------
-func encryptECB(data, key []byte, blockSize int) []byte {
+func EncryptECB(data, key []byte, blockSize int) []byte {
 	if len(data)%blockSize != 0 {
 		data = padMe(data, (blockSize - (len(data) % blockSize)))
 	}
@@ -35,7 +35,7 @@ func encryptECB(data, key []byte, blockSize int) []byte {
 
 // Decrypt ECB Mode
 // --------------------------------------------------------------------
-func decryptECB(data, key []byte, blockSize int) []byte {
+func DecryptECB(data, key []byte, blockSize int) []byte {
 	if len(data)%blockSize != 0 {
 		data = padMe(data, (blockSize - (len(data) % blockSize)))
 	}
@@ -51,7 +51,7 @@ func decryptECB(data, key []byte, blockSize int) []byte {
 
 // Encrypt CBC Mode
 // --------------------------------------------------------------------
-func encryptCBC(data, key, iv []byte, blockSize int) []byte {
+func EncryptCBC(data, key, iv []byte, blockSize int) []byte {
 	finalResult := []byte{}
 
 	if len(data)%blockSize != 0 {
@@ -76,7 +76,7 @@ func encryptCBC(data, key, iv []byte, blockSize int) []byte {
 
 // Decrypt CBC Mode
 // --------------------------------------------------------------------
-func decryptCBC(data, key, iv []byte, blockSize int) []byte {
+func DecryptCBC(data, key, iv []byte, blockSize int) []byte {
 	finalResult := []byte{}
 
 	if len(data)%blockSize != 0 {
@@ -105,7 +105,7 @@ func decryptCBC(data, key, iv []byte, blockSize int) []byte {
 
 // repeatingKeyXOR
 // --------------------------------------------------------------------
-func repeatingKeyXOR(cstring, key []byte) []byte {
+func RepeatingKeyXOR(cstring, key []byte) []byte {
 	resultArray := []byte{}
 
 	stringCount := len(cstring)
@@ -128,7 +128,7 @@ func repeatingKeyXOR(cstring, key []byte) []byte {
 
 // Padding Function
 // --------------------------------------------------------------------
-func padMe(block []byte, paddingAmount int) []byte {
+func PadMe(block []byte, paddingAmount int) []byte {
 	for count := 0; count < paddingAmount; count++ {
 		block = append(block, '\x00')
 	}
@@ -137,7 +137,7 @@ func padMe(block []byte, paddingAmount int) []byte {
 
 // Generate X bytes in byte array
 // --------------------------------------------------------------------
-func generateBytes(keyLength int) []byte {
+func GenerateBytes(keyLength int) []byte {
 	key := make([]byte, keyLength)
 	rand.Read(key)
 	return key
@@ -145,7 +145,7 @@ func generateBytes(keyLength int) []byte {
 
 // Determine Cipher Block
 // --------------------------------------------------------------------
-func determineECB(bArray []byte, blockSize int) bool {
+func DetermineECB(bArray []byte, blockSize int) bool {
 	ecbMode := false
 
 	blockSlices := [][]byte{}
