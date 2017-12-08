@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 	//"crypto/aes"
 )
 
@@ -24,40 +25,34 @@ func check(err error) {
 func main() {
 	fileContentArray, err := fileToArray(challengefile)
 	check(err)
-	lineMap := make(map[int]int)
 
 	for linenum, line := range fileContentArray {
 		decodedHex, err := hex.DecodeString(string(line))
 		check(err)
-		lineMap[linenum] = ScoringSystem(decodedHex)
-	}
-	ecbline := getLowest(lineMap)
-	fmt.Println(fileContentArray[ecbline])
-}
-
-func getLowest(lineMap map[int]int) int {
-	lowestCount := 9999
-	lowestLineNum := 0
-
-	for linenum, count := range lineMap {
-		if count < lowestCount {
-			lowestCount = count
-			lowestLineNum = linenum
+		if determineECB(decodedHex) {
+			fmt.Printf("ECB Found at line: %d with String: %s", linenum, line)
 		}
 	}
-	fmt.Println(lowestCount)
-	return lowestLineNum
 }
 
-func ScoringSystem(bArray []byte) int {
-	highFreq := make(map[byte]int)
-	decodeLen := len(bArray)
+func determineECB(bArray []byte) bool {
+	ecbMode := false
+	blocksize := 16
 
-	for i := 0; i < decodeLen; i++ {
-		highFreq[bArray[i]] += 1
+	blockSlices := [][]byte{}
+	for bs, be := 0, blocksize; bs < len(bArray); bs, be = bs+blocksize, be+blocksize {
+		blockSlices = append(blockSlices, bArray[bs:be])
 	}
-
-	return len(highFreq)
+	decodeLen := len(blockSlices)
+	for i := 0; i < decodeLen-1; i++ {
+		for j := i + 1; j < decodeLen; j++ {
+			if reflect.DeepEqual(blockSlices[i], blockSlices[j]) {
+				ecbMode = true
+				break
+			}
+		}
+	}
+	return ecbMode
 }
 
 func fileToArray(filePath string) ([]string, error) {
