@@ -10,6 +10,7 @@ import (
 func main() {
 	aesKeySize := 16
 	aesKey := crypt.GenerateBytes(aesKeySize)
+	blockSize := 16
 
 	b64string := "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg" +
 		"aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq" +
@@ -20,7 +21,11 @@ func main() {
 	crypt.Check(err)
 
 	combinedStr := append(myString, decodedString...)
-	fmt.Println(combinedStr)
+	encryptedString := crypt.EncryptECB(combinedStr, aesKey, blockSize)
 
-	fmt.Println(aesKey)
+	fmt.Println(encryptedString)
+}
+
+func determineBlockSize() {
+
 }
