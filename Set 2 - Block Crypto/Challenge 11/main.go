@@ -21,10 +21,10 @@ func main() {
 	ivKeySize := 16
 	blockSize := 16
 
-	aesKey := generateBytes(aesKeySize)
-	ivKey := generateBytes(ivKeySize)
-
 	for i := 0; i < executionTimes; i++ {
+		aesKey := generateBytes(aesKeySize)
+		ivKey := generateBytes(ivKeySize)
+
 		modeSelect = rand.Intn(2)
 		switch modeSelect {
 		case 0:
