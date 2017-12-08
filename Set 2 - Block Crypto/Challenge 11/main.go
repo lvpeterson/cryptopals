@@ -12,7 +12,7 @@ import (
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	data := []byte("yyyyyyyyyyyyy")
+	data := []byte("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 	executionTimes := 100
 	encryptedData := []byte{}
 	modeSelect := 9
@@ -65,20 +65,20 @@ func encryptECB(data, key []byte, blockSize int) []byte {
 func encryptCBC(data, key, iv []byte, blockSize int) []byte {
 	finalResult := []byte{}
 
+	if len(data)%blockSize != 0 {
+		data = padMe(data, (blockSize - (len(data) % blockSize)))
+	}
+
 	for bs, be := 0, blockSize; bs < len(data); bs, be = bs+blockSize, be+blockSize {
 		cstring := data[bs:be]
-		encryptResult := cbcMode(cstring, key, iv, false, blockSize)
+		encryptResult := cbcMode(cstring, key, iv, blockSize)
 		finalResult = append(finalResult, encryptResult...)
-		iv = data[bs:be]
+		iv = encryptResult
 	}
 	return finalResult
 }
 
-func cbcMode(cstring, key, iv []byte, mode bool, blockSize int) []byte {
-	if len(cstring)%16 != 0 {
-		cstring = padMe(cstring, (16 - (len(cstring) % 16)))
-	}
-
+func cbcMode(cstring, key, iv []byte, blockSize int) []byte {
 	xordString := repeatingKeyXOR(cstring, iv)
 
 	block, err := aes.NewCipher(key)
@@ -97,6 +97,7 @@ func determineECB(bArray []byte, blockSize int) bool {
 	for bs, be := 0, blockSize; bs < len(bArray); bs, be = bs+blockSize, be+blockSize {
 		blockSlices = append(blockSlices, bArray[bs:be])
 	}
+
 	decodeLen := len(blockSlices)
 	for i := 0; i < decodeLen-1; i++ {
 		for j := i + 1; j < decodeLen; j++ {

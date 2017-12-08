@@ -15,6 +15,7 @@ const (
 func main() {
 	KEY := []byte("YELLOW SUBMARINE")
 	IV := []byte("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00")
+
 	finalResult := []byte{}
 	blockSize := 16
 	fileContents, err := ioutil.ReadFile(challengeFile)
@@ -28,7 +29,6 @@ func main() {
 		finalResult = append(finalResult, decryptResult...)
 		IV = decodedContents[bs:be]
 	}
-
 	fmt.Println(string(finalResult))
 
 }
@@ -38,8 +38,7 @@ func cbcMode(cstring, key, iv []byte, mode bool, blockSize int) []byte {
 	// Order of Ops Encrypt: plaintext XOR with IV/Previous Cipherblock -> encrypt
 	// Order of Ops Decrypt: ciphertext decrypt -> xor decrypted with IV/Previous cipherblock
 	if mode {
-		paddedCString := padMe(cstring, blockSize)
-		xordString := repeatingKeyXOR(paddedCString, iv)
+		xordString := repeatingKeyXOR(cstring, iv)
 		encryptedString := encryptBlock(xordString, key)
 		return encryptedString
 	} else {
@@ -77,9 +76,8 @@ func decryptBlock(data, key []byte) []byte {
 	return decryptedData
 }
 
-func padMe(block []byte, blockSize int) []byte {
-	paddingLength := blockSize - len(block)
-	for count := 0; count < paddingLength; count++ {
+func padMe(block []byte, paddingAmount int) []byte {
+	for count := 0; count < paddingAmount; count++ {
 		block = append(block, '\x00')
 	}
 	return block
