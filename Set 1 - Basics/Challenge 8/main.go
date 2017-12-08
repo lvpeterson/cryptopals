@@ -26,21 +26,22 @@ func main() {
 	fileContentArray, err := fileToArray(challengefile)
 	check(err)
 
+	blockSize := 16
+
 	for linenum, line := range fileContentArray {
 		decodedHex, err := hex.DecodeString(string(line))
 		check(err)
-		if determineECB(decodedHex) {
+		if determineECB(decodedHex, blockSize) {
 			fmt.Printf("ECB Found at line: %d with String: %s", linenum, line)
 		}
 	}
 }
 
-func determineECB(bArray []byte) bool {
+func determineECB(bArray []byte, blockSize int) bool {
 	ecbMode := false
-	blocksize := 16
 
 	blockSlices := [][]byte{}
-	for bs, be := 0, blocksize; bs < len(bArray); bs, be = bs+blocksize, be+blocksize {
+	for bs, be := 0, blockSize; bs < len(bArray); bs, be = bs+blockSize, be+blockSize {
 		blockSlices = append(blockSlices, bArray[bs:be])
 	}
 	decodeLen := len(blockSlices)
