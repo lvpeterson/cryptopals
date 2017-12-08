@@ -7,24 +7,18 @@ import (
 	"reflect"
 )
 
-func Check(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 // --------------------------------------------------------------------
 // Encryption Modes:
 // --------------------------------------------------------------------
 
-// Encrypt ECB Mode
+// EncryptECB Mode
 // --------------------------------------------------------------------
 func EncryptECB(data, key []byte, blockSize int) []byte {
 	if len(data)%blockSize != 0 {
-		data = padMe(data, (blockSize - (len(data) % blockSize)))
+		data = PadMe(data, (blockSize - (len(data) % blockSize)))
 	}
 	block, err := aes.NewCipher(key)
-	check(err)
+	Check(err)
 
 	encryptedData := make([]byte, len(data))
 	for bs, be := 0, blockSize; bs < len(encryptedData); bs, be = bs+blockSize, be+blockSize {
@@ -33,14 +27,14 @@ func EncryptECB(data, key []byte, blockSize int) []byte {
 	return encryptedData
 }
 
-// Decrypt ECB Mode
+// DecryptECB Mode
 // --------------------------------------------------------------------
 func DecryptECB(data, key []byte, blockSize int) []byte {
 	if len(data)%blockSize != 0 {
-		data = padMe(data, (blockSize - (len(data) % blockSize)))
+		data = PadMe(data, (blockSize - (len(data) % blockSize)))
 	}
 	block, err := aes.NewCipher(key)
-	check(err)
+	Check(err)
 
 	encryptedData := make([]byte, len(data))
 	for bs, be := 0, blockSize; bs < len(encryptedData); bs, be = bs+blockSize, be+blockSize {
@@ -49,21 +43,21 @@ func DecryptECB(data, key []byte, blockSize int) []byte {
 	return encryptedData
 }
 
-// Encrypt CBC Mode
+// EncryptCBC Mode
 // --------------------------------------------------------------------
 func EncryptCBC(data, key, iv []byte, blockSize int) []byte {
 	finalResult := []byte{}
 
 	if len(data)%blockSize != 0 {
-		data = padMe(data, (blockSize - (len(data) % blockSize)))
+		data = PadMe(data, (blockSize - (len(data) % blockSize)))
 	}
 
 	for bs, be := 0, blockSize; bs < len(data); bs, be = bs+blockSize, be+blockSize {
 		cstring := data[bs:be]
-		xordString := repeatingKeyXOR(cstring, iv)
+		xordString := RepeatingKeyXOR(cstring, iv)
 
 		block, err := aes.NewCipher(key)
-		check(err)
+		Check(err)
 
 		encryptedData := make([]byte, len(xordString))
 		block.Encrypt(encryptedData, xordString)
@@ -74,25 +68,25 @@ func EncryptCBC(data, key, iv []byte, blockSize int) []byte {
 	return finalResult
 }
 
-// Decrypt CBC Mode
+// DecryptCBC Mode
 // --------------------------------------------------------------------
 func DecryptCBC(data, key, iv []byte, blockSize int) []byte {
 	finalResult := []byte{}
 
 	if len(data)%blockSize != 0 {
-		data = padMe(data, (blockSize - (len(data) % blockSize)))
+		data = PadMe(data, (blockSize - (len(data) % blockSize)))
 	}
 
 	for bs, be := 0, blockSize; bs < len(data); bs, be = bs+blockSize, be+blockSize {
 		cstring := data[bs:be]
 
 		block, err := aes.NewCipher(key)
-		check(err)
+		Check(err)
 
 		decryptedData := make([]byte, len(cstring))
 		block.Decrypt(decryptedData, cstring)
 
-		xordString := repeatingKeyXOR(decryptedData, iv)
+		xordString := RepeatingKeyXOR(decryptedData, iv)
 		finalResult = append(finalResult, xordString...)
 		iv = cstring
 	}
@@ -103,7 +97,7 @@ func DecryptCBC(data, key, iv []byte, blockSize int) []byte {
 // XOR Functions
 // --------------------------------------------------------------------
 
-// repeatingKeyXOR
+// RepeatingKeyXOR
 // --------------------------------------------------------------------
 func RepeatingKeyXOR(cstring, key []byte) []byte {
 	resultArray := []byte{}
@@ -126,7 +120,7 @@ func RepeatingKeyXOR(cstring, key []byte) []byte {
 // Misc. Functions
 // --------------------------------------------------------------------
 
-// Padding Function
+// PadMe Skywalker
 // --------------------------------------------------------------------
 func PadMe(block []byte, paddingAmount int) []byte {
 	for count := 0; count < paddingAmount; count++ {
@@ -135,7 +129,7 @@ func PadMe(block []byte, paddingAmount int) []byte {
 	return block
 }
 
-// Generate X bytes in byte array
+// GenerateBytes generates X bytes in byte array
 // --------------------------------------------------------------------
 func GenerateBytes(keyLength int) []byte {
 	key := make([]byte, keyLength)
@@ -143,7 +137,7 @@ func GenerateBytes(keyLength int) []byte {
 	return key
 }
 
-// Determine Cipher Block
+// DetermineECB Cipher Block
 // --------------------------------------------------------------------
 func DetermineECB(bArray []byte, blockSize int) bool {
 	ecbMode := false
@@ -163,4 +157,12 @@ func DetermineECB(bArray []byte, blockSize int) bool {
 		}
 	}
 	return ecbMode
+}
+
+// Check errors
+// --------------------------------------------------------------------
+func Check(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }

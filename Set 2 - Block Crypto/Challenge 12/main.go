@@ -8,7 +8,7 @@ import (
 
 func main() {
 	aesKeySize := 16
-	aesKey := crypt.generateBytes(aesKeySize)
+	aesKey := crypt.GenerateBytes(aesKeySize)
 	fmt.Println(aesKey)
 
 }
